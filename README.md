@@ -1,50 +1,65 @@
-# 🚀 Project Template
+# 🚀 Jenkins Local
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://img.shields.io/github/license/gvatsal60/project-template)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/gvatsal60/project-template/master.svg)](https://results.pre-commit.ci/latest/github/gvatsal60/project-template/HEAD)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7ae60c7a6c824bfea751067f08618c0d)](https://app.codacy.com/gh/gvatsal60/project-template/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![CodeFactor](https://www.codefactor.io/repository/github/gvatsal60/project-template/badge)](https://www.codefactor.io/repository/github/gvatsal60/project-template)
-![GitHub pull-requests](https://img.shields.io/github/issues-pr/gvatsal60/project-template)
-![GitHub Issues](https://img.shields.io/github/issues/gvatsal60/project-template)
-![GitHub forks](https://img.shields.io/github/forks/gvatsal60/project-template)
-![GitHub stars](https://img.shields.io/github/stars/gvatsal60/project-template)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://img.shields.io/github/license/gvatsal60/jenkins-local)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/gvatsal60/jenkins-local/master.svg)](https://results.pre-commit.ci/latest/github/gvatsal60/jenkins-local/HEAD)
+[![Docker Compose](https://img.shields.io/badge/Docker_Compose-required-blue)](https://docs.docker.com/compose/)
 
-Welcome to the `Project Template` repository! This serves as your starting point for new projects,
-packed with the essential tools to ensure smooth development, code quality, and consistent documentation.
-Inside, you'll find:
+A local development environment with **Jenkins** and **Ollama** running via Docker Compose.
 
-1. 📄 README.md
-2. 📝 LICENSE
-3. 🚫 .gitignore
-4. 🧑‍🤝‍🧑 CODE_OF_CONDUCT.md
-5. ✍️ CONTRIBUTING.md
-6. 💰 FUNDING.yml
-7. 📜 CHANGELOG.md
+## 🛠️ Prerequisites
 
-## 🛠️ Installation
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-To set up your project using this template, just follow these simple steps:
+## 🚀 Quick Start
 
-1. **Clone the repository:**
+```sh
+git clone https://github.com/gvatsal60/jenkins-local.git
+cd jenkins-local
+make up
+```
 
-   ```sh
-   git clone https://github.com/gvatsal60/project-template.git
-   cd project-template
-   ```
+## 📋 Services
 
-2. **Customize According to Your Project:**
-   * 🎯 Replace `[Project Name]`
-   * 📧 Update `[contact email]`
-   * 💡 Follow `[coding style guide]`
+| Service   | Port    | Description                  |
+|-----------|---------|------------------------------|
+| Jenkins   | `8080`  | CI/CD automation server      |
+| Ollama    | `11434` | Local LLM runtime            |
 
-## 💬 Contributing
+### Jenkins
 
-We love contributions! If you'd like to help improve this project, please review our
-[Contribution Guidelines](https://github.com/gvatsal60/project-template/blob/HEAD/CONTRIBUTING.md)
-before submitting pull requests.
+Access Jenkins at `http://localhost:8080`
+
+Initial admin password:
+
+```sh
+docker compose -f src/docker-compose.yml exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+### Ollama
+
+Access Ollama at `http://localhost:11434`
+
+The `qwen2.5:0.5b` model is pre-pulled on startup.
+
+## 🧰 Make Commands
+
+```sh
+make all           # Start all services (default target)
+make up            # Start all services
+make down          # Stop all services
+make logs          # Show Jenkins logs
+make ps            # List running containers
+make restart       # Restart all services
+make ollama-pull MODEL=<name>  # Pull an Ollama model
+make ollama-list   # List Ollama models
+make jenkins-shell # Open shell in Jenkins container
+make ollama-shell  # Open shell in Ollama container
+make clean         # Stop and remove containers and volumes
+make test          # Validate Docker Compose configuration
+make help          # Show all available commands
+```
 
 ## 🛡️ License
 
-This project is licensed under the Apache License 2.0 License -
-see the [LICENSE](https://github.com/gvatsal60/project-template/blob/HEAD/LICENSE)
-file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
