@@ -21,10 +21,10 @@ make up
 
 ## 📋 Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Jenkins | `8080` | CI/CD automation server |
-| Ollama | `11434` | Local LLM runtime |
+| Service   | Port    | Description                  |
+|-----------|---------|------------------------------|
+| Jenkins   | `8080`  | CI/CD automation server      |
+| Ollama    | `11434` | Local LLM runtime            |
 
 ### Jenkins
 
