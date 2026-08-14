@@ -6,10 +6,7 @@
     "vscode": {
       "extensions": [
         "DavidAnson.vscode-markdownlint",
-        "EditorConfig.EditorConfig",
         "Tyriar.sort-lines",
-        "bradzacher.vscode-copy-filename",
-        "esbenp.prettier-vscode",
         "foxundermoon.shell-format",
         "ms-azuretools.vscode-docker",
         "streetsidesoftware.code-spell-checker",
@@ -48,9 +45,6 @@
     }
   },
   "image": "mcr.microsoft.com/devcontainers/base:debian",
-  "mounts": [
-    "source=${localWorkspaceFolder}/snippets,target=${containerWorkspaceFolder}/.vscode,type=bind,consistency=cached"
-  ],
   "postCreateCommand": "chmod +x ${containerWorkspaceFolder}/.devcontainer/postCreateScript.sh && ${containerWorkspaceFolder}/.devcontainer/postCreateScript.sh",
   "runArgs": [
     "--rm",
