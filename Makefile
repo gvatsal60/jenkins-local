@@ -3,10 +3,9 @@ SRC_DIR := $(TOP_DIR)/src
 DOCKER_COMPOSE_FILE := $(SRC_DIR)/docker-compose.yml
 COMPOSE_CMD := docker compose -f $(DOCKER_COMPOSE_FILE)
 
-.PHONY: help up down logs ps restart ollama-pull ollama-list jenkins-shell ollama-shell clean
+.PHONY: help all up down logs ps restart ollama-pull ollama-list jenkins-shell ollama-shell clean test
 
-help: ## Show this help message
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+all: up
 
 up: ## Docker Compose Up
 	@$(COMPOSE_CMD) up -d
@@ -37,3 +36,6 @@ ollama-shell: ## Open Shell in Ollama Container
 
 clean: ## Stop and Remove Containers and Volumes
 	@$(COMPOSE_CMD) down -v
+
+test: ## Validate Docker Compose Configuration
+	@$(COMPOSE_CMD) config --quiet

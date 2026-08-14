@@ -31,6 +31,7 @@ make up
 Access Jenkins at `http://localhost:8080`
 
 Initial admin password:
+
 ```sh
 docker compose -f src/docker-compose.yml exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
@@ -44,17 +45,19 @@ The `qwen2.5:0.5b` model is pre-pulled on startup.
 ## 🧰 Make Commands
 
 ```sh
-make up           # Start all services
-make down         # Stop all services
-make logs         # Show Jenkins logs
-make ps           # List running containers
-make restart      # Restart all services
+make all           # Start all services (default target)
+make up            # Start all services
+make down          # Stop all services
+make logs          # Show Jenkins logs
+make ps            # List running containers
+make restart       # Restart all services
 make ollama-pull MODEL=<name>  # Pull an Ollama model
-make ollama-list  # List Ollama models
+make ollama-list   # List Ollama models
 make jenkins-shell # Open shell in Jenkins container
 make ollama-shell  # Open shell in Ollama container
-make clean        # Stop and remove containers and volumes
-make help         # Show all available commands
+make clean         # Stop and remove containers and volumes
+make test          # Validate Docker Compose configuration
+make help          # Show all available commands
 ```
 
 ## 🛡️ License
