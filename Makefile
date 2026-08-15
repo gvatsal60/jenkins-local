@@ -3,9 +3,12 @@ SRC_DIR := $(TOP_DIR)/src
 DOCKER_COMPOSE_FILE := $(SRC_DIR)/docker-compose.yml
 COMPOSE_CMD := docker compose -f $(DOCKER_COMPOSE_FILE)
 
-.PHONY: all clean down help jenkins-pass jenkins-shell logs ollama-list ollama-pull ollama-shell ps restart test up
+.PHONY: all reset clean down help jenkins-pass jenkins-shell logs ollama-list ollama-pull ollama-shell ps restart test up
 
 all: up
+
+reset:  ## Reset the Development Environment
+	@$(COMPOSE_CMD) down -v --rmi all --remove-orphans
 
 clean: ## Stop and Remove Containers and Volumes
 	@$(COMPOSE_CMD) down -v
@@ -16,31 +19,31 @@ down: ## Docker Compose Down
 help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-jenkins-pass: ## Show Jenkins Initial Admin Password
+jenkins-pass: up ## Show Jenkins Initial Admin Password
 	@$(COMPOSE_CMD) exec -T jenkins cat /var/jenkins_home/secrets/initialAdminPassword 2>/dev/null
 
-jenkins-shell: ## Open Shell in Jenkins Container
+jenkins-shell: up ## Open Shell in Jenkins Container
 	@$(COMPOSE_CMD) exec jenkins /bin/bash
 
-logs: ## Show Jenkins Logs
+logs: up ## Show Jenkins Logs
 	@$(COMPOSE_CMD) logs jenkins
 
-ollama-list: ## List Ollama Models
+ollama-list: up ## List Ollama Models
 	@$(COMPOSE_CMD) exec ollama ollama list
 
-ollama-pull: ## Pull Ollama Model (usage: make ollama-pull MODEL=<name>)
+ollama-pull: up ## Pull Ollama Model (usage: make ollama-pull MODEL=<name>)
 	@$(COMPOSE_CMD) exec ollama ollama pull $(MODEL)
 
-ollama-shell: ## Open Shell in Ollama Container
+ollama-shell: up ## Open Shell in Ollama Container
 	@$(COMPOSE_CMD) exec ollama /bin/sh
 
 ps: ## List Running Containers
 	@$(COMPOSE_CMD) ps
 
-restart: ## Restart All Services
+restart: up ## Restart All Services
 	@$(COMPOSE_CMD) restart
 
-test: ## Validate Docker Compose Configuration
+test: up ## Validate Docker Compose Configuration
 	@$(COMPOSE_CMD) config --quiet
 
 up: ## Docker Compose Up
