@@ -50,3 +50,20 @@ unclassified:
     #   - If the error is from SonarQube Scanner, link to: https://example.org/sonarqube-kb
     #   - If a Kubernetes manifest failed, remind about cluster-specific requirements
     # logPattern: "(?i)(error|exception|failed|fatal)"
+jenkins:
+  # Disable controller executors so everything runs on agents
+  numExecutors: 0
+
+  # Enable TCP agent listener on port 50000
+  slaveAgentPort: 50000
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID:-admin}"
+          password: "${JENKINS_ADMIN_PASSWORD:-change-me}"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
