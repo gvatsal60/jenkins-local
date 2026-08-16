@@ -1,0 +1,56 @@
+jenkins:
+  # Disable controller executors so everything runs on agents
+  numExecutors: 0
+
+  # Enable TCP agent listener on port 50000
+  slaveAgentPort: 50000
+
+  # Dynamically provision agents via Docker Cloud
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        containerCap: 3
+        templates:
+          - name: "inbound-agent"
+            labelString: "docker-agent"
+            mode: NORMAL
+            remoteFs: "/home/jenkins/agent"
+            instanceCapStr: "3"
+            pullStrategy: PULL_LATEST
+            pullTimeout: 180
+            retentionStrategy:
+              idleMinutes: 10
+            connector:
+              jnlp:
+                jenkinsUrl: "http://jenkins-controller:8080"
+                user: "jenkins"
+                # user: "1000"
+            dockerTemplateBase:
+              image: "jenkins/inbound-agent:latest"
+              network: "jenkins-ai-mesh_jenkins-net"
+              mounts:
+                - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
+              environmentsString: |
+                JENKINS_URL=http://jenkins-controller:8080
+
+unclassified:
+  location:
+    url: "http://localhost:8080/" # Primary Jenkins URL
+  resourceRoot:
+    url: "http://jenkins-static.local" # Resource Root URL
+  explainError:
+    enableExplanation: true
+    enableAutoExplainOnFailure: true
+    aiProvider:
+      ollama:
+        model: "qwen2.5:0.5b"
+        url: "http://ollama-local:11434"
+    # language: "en"
+    # customContext: |
+    #   Consider these additional instructions:
+    #   - If the error is from SonarQube Scanner, link to: https://example.org/sonarqube-kb
+    #   - If a Kubernetes manifest failed, remind about cluster-specific requirements
+    # logPattern: "(?i)(error|exception|failed|fatal)"

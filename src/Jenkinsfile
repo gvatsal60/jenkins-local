@@ -1,0 +1,15 @@
+pipeline {
+  agent { label "docker-agent" }
+  stages {
+    stage("Fail") {
+      steps {
+        error "This is a test failure"
+      }
+    }
+  }
+  post {
+    failure {
+      explainError()
+    }
+  }
+}
