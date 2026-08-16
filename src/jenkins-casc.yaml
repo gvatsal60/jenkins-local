@@ -25,7 +25,6 @@ jenkins:
               jnlp:
                 jenkinsUrl: "http://jenkins-controller:8080"
                 user: "jenkins"
-                # user: "1000"
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
               network: "jenkins-ai-mesh_jenkins-net"
