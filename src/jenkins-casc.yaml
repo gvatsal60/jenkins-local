@@ -1,10 +1,8 @@
 jenkins:
   # Disable controller executors so everything runs on agents
   numExecutors: 0
-
   # Enable TCP agent listener on port 50000
   slaveAgentPort: 50000
-
   # Dynamically provision agents via Docker Cloud
   clouds:
     - docker:
@@ -35,7 +33,6 @@ jenkins:
                 - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
               environmentsString: |
                 JENKINS_URL=http://jenkins-controller:8080
-
 unclassified:
   location:
     url: "http://localhost:8080/" # Primary Jenkins URL

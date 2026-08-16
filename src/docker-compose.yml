@@ -1,6 +1,6 @@
 name: jenkins-ai-mesh
 services:
-   # 1. INIT SERVICE: Installs plugins cleanly into the volume first, then turns off
+  # 1. INIT SERVICE: Installs plugins cleanly into the volume first, then turns off
   jenkins-plugin-installer:
     image: jenkins/jenkins:lts
     container_name: jenkins-installer
@@ -12,7 +12,7 @@ services:
     command: >
       bash -c "jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --plugin-download-directory /var/jenkins_home/plugins"
 
-   # 2. CONTROLLER SERVICE: Runs the stable server once plugins exist
+    # 2. CONTROLLER SERVICE: Runs the stable server once plugins exist
   jenkins-controller:
     image: jenkins/jenkins:lts
     container_name: jenkins-controller
@@ -37,12 +37,11 @@ services:
       jenkins-plugin-installer:
         condition: service_completed_successfully
     healthcheck:
-      test: [ "CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1" ]
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-
   # 3. OLLAMA SERVICE
   ollama-local:
     image: ollama/ollama:latest
@@ -52,14 +51,12 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
-    entrypoint: [ "/bin/sh", "-c", "ollama serve & echo 'Waiting for Ollama to boot...' && until ollama list > /dev/null 2>&1; do sleep 1; done && echo 'Checking/Pulling model...' && ollama pull qwen2.5:0.5b && wait" ]
+    entrypoint: ["/bin/sh", "-c", "ollama serve & echo 'Waiting for Ollama to boot...' && until ollama list > /dev/null 2>&1; do sleep 1; done && echo 'Checking/Pulling model...' && ollama pull qwen2.5:0.5b && wait"]
     networks:
       - jenkins-net
-
 volumes:
   jenkins_data:
   ollama_data:
-
 networks:
   jenkins-net:
     driver: bridge
