@@ -1,16 +1,49 @@
+name: jenkins-ai-mesh
 services:
-  jenkins:
+  # 1. INIT SERVICE: Installs plugins cleanly into the volume first, then turns off
+  jenkins-plugin-installer:
     image: jenkins/jenkins:lts
-    container_name: jenkins-local
+    container_name: jenkins-installer
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt:ro
+    networks:
+      - jenkins-net
+    command: >
+      bash -c "jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --plugin-download-directory /var/jenkins_home/plugins"
+
+    # 2. CONTROLLER SERVICE: Runs the stable server once plugins exist
+  jenkins-controller:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-controller
+    user: root
     ports:
-      - "8080:8080"
-      # group_add:
-      #   - "103"
+      - "8080:8080" # Jenkins Port
+      - "50000:50000" # JNLP Port
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins-casc.yaml:/var/jenkins_home/casc.yaml:ro
+      - ./init.groovy.d:/var/jenkins_home/init.groovy.d:ro
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Djenkins.url=http://localhost:8080/ -DJENKINS_URL=http://localhost:8080/
+      - JENKINS_SLAVE_AGENT_PORT=50000
+      - JENKINS_URL=http://localhost:8080/
+    networks:
+      - jenkins-net
     restart: unless-stopped
-  ollama:
+    depends_on:
+      jenkins-plugin-installer:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  # 3. OLLAMA SERVICE
+  ollama-local:
     image: ollama/ollama:latest
     container_name: ollama-local
     ports:
@@ -18,17 +51,12 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        ollama serve &
-        echo "Waiting for Ollama to boot..."
-        until ollama list > /dev/null 2>&1; do
-          sleep 1
-        done
-        echo "Checking/Pulling model..."
-        ollama pull qwen2.5:0.5b
-        wait
+    entrypoint: ["/bin/sh", "-c", "ollama serve & echo 'Waiting for Ollama to boot...' && until ollama list > /dev/null 2>&1; do sleep 1; done && echo 'Checking/Pulling model...' && ollama pull qwen2.5:0.5b && wait"]
+    networks:
+      - jenkins-net
 volumes:
   jenkins_data:
   ollama_data:
+networks:
+  jenkins-net:
+    driver: bridge
