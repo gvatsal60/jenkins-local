@@ -3,7 +3,6 @@ jenkins:
   numExecutors: 0
   # Enable TCP agent listener on port 50000
   slaveAgentPort: 50000
-
   securityRealm:
     local:
       allowsSignup: false
@@ -13,7 +12,6 @@ jenkins:
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
-
   # Dynamically provision agents via Docker Cloud
   clouds:
     - docker:
