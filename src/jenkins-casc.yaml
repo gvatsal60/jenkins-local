@@ -18,7 +18,7 @@ jenkins:
         name: "docker"
         dockerApi:
           dockerHost:
-            uri: "unix:///var/run/docker.sock"
+            uri: "tcp://docker-socket-proxy:2375"
         containerCap: 3
         templates:
           - name: "inbound-agent"
@@ -36,9 +36,7 @@ jenkins:
                 user: "jenkins"
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
-              network: "jenkins-local-mesh_jenkins-net"
-              mounts:
-                - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
+              network: "jenkins-ai-mesh_jenkins-net"
               environmentsString: |
                 JENKINS_URL=http://jenkins-controller:8080
 jobs:
