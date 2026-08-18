@@ -41,7 +41,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
   docker-socket-proxy:
     image: ghcr.io/tecnativa/docker-socket-proxy:latest
     container_name: docker-socket-proxy
