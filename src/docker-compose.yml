@@ -27,7 +27,7 @@ services:
       - ./init.groovy.d:/var/jenkins_home/init.groovy.d:ro
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Djenkins.url=http://localhost:8080/ -DJENKINS_URL=http://localhost:8080/
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true -Djenkins.url=http://localhost:8080/ -DJENKINS_URL=http://localhost:8080/
       - JENKINS_SLAVE_AGENT_PORT=50000
       - JENKINS_URL=http://localhost:8080/
     networks:
