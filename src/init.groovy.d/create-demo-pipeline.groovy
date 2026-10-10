@@ -1,4 +1,7 @@
+import hudson.model.Cause
 import jenkins.model.Jenkins
+import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage
+import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
@@ -10,6 +13,10 @@ if (!jenkinsfile.exists()) {
   return
 }
 
+// Unsandboxed pipeline scripts must be approved in Script Approval before they can run
+ScriptApproval.get().preapprove(jenkinsfile.text, GroovyLanguage.get())
+println "[seed] Approved pipeline script: ${jenkinsfile}"
+
 def jenkins = Jenkins.instance
 def job = jenkins.getItemByFullName(jobName, WorkflowJob)
 def definition = new CpsFlowDefinition(jenkinsfile.text, false)
@@ -19,7 +26,8 @@ if (job == null) {
   job.definition = definition
   job.save()
   println "[seed] Created pipeline job: ${jobName}"
-  job.scheduleBuild()
+  // scheduleBuild() without a cause attaches Cause.LegacyCodeCause ("Legacy code started this job")
+  job.scheduleBuild(new Cause.RemoteCause("init.groovy.d", "create-demo-pipeline.groovy"))
 } else {
   def currentScript = (job.definition instanceof CpsFlowDefinition) ? job.definition.script : null
   if (currentScript != jenkinsfile.text) {
