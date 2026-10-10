@@ -1,9 +1,23 @@
 pipeline {
   agent { label "docker-agent" }
   stages {
-    stage("Fail") {
+    stage("Build") {
       steps {
-        error "This is a test failure"
+        sh "echo 'Compiling the application...'"
+      }
+    }
+    stage("Test") {
+      steps {
+        sh '''
+          echo "Running unit tests..."
+          echo "test_addition ...... PASSED"
+          echo "test_subtraction ... PASSED"
+          echo "test_division ...... FAILED"
+          echo "java.lang.ArithmeticException: / by zero"
+          echo "  at com.example.Calculator.divide(Calculator.java:42)"
+          echo "  at com.example.CalculatorTest.test_division(CalculatorTest.java:18)"
+          exit 1
+        '''
       }
     }
   }
