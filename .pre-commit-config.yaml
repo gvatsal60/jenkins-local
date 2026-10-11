@@ -44,7 +44,7 @@ repos:
     rev: "v18.0.0"
     hooks:
       - id: npm-groovy-lint
-        args: ['--format', '--fix']
+        args: ['--fix']
   # Ruff for linting and formatting Python files
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.16.10"
