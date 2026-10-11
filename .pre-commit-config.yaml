@@ -39,6 +39,12 @@ repos:
         exclude: '\.ipynb$' # Exclude Jupyter notebooks
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  # Groovy linting and formatting
+  - repo: https://github.com/nvuillam/npm-groovy-lint
+    rev: "v0.5.2" # Use the latest stable release
+    hooks:
+      - id: npm-groovy-lint
+        args: ['--format', '--fix']
   # Ruff for linting and formatting Python files
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.16.10"
