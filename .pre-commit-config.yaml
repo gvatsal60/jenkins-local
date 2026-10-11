@@ -41,10 +41,13 @@ repos:
       - id: trailing-whitespace
   # Groovy linting and formatting
   - repo: https://github.com/nvuillam/npm-groovy-lint
-    rev: "v15.2.1" # Java 8+ compatible (before v16.2.0 scoped to Java 17-24)
+    rev: "v18.0.0"
     hooks:
       - id: npm-groovy-lint
+        language: docker_image
+        entry: nvuillam/npm-groovy-lint:v18.0.0
         args: ['--fix']
+        types: [groovy]
   # Ruff for linting and formatting Python files
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.16.10"
