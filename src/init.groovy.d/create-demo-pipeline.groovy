@@ -7,9 +7,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 import java.util.logging.Logger
 
-def logger = Logger.getLogger('init.groovy.d.create-demo-pipeline')
-def jobName = 'demo-pipeline'
-def jenkinsfile = new File('/var/jenkins_home/seed/Jenkinsfile')
+Logger logger = Logger.getLogger('init.groovy.d.create-demo-pipeline')
+String jobName = 'demo-pipeline'
+File jenkinsfile = new File('/var/jenkins_home/seed/Jenkinsfile')
 
 if (!jenkinsfile.exists()) {
   logger.info('[seed] ' + jenkinsfile + ' not found, skipping job creation')
@@ -20,9 +20,9 @@ if (!jenkinsfile.exists()) {
 ScriptApproval.get().preapprove(jenkinsfile.text, GroovyLanguage.get())
 logger.info('[seed] Approved pipeline script: ' + jenkinsfile)
 
-def jenkins = Jenkins.instance
-def job = jenkins.getItemByFullName(jobName, WorkflowJob)
-def definition = new CpsFlowDefinition(jenkinsfile.text, false)
+Jenkins jenkins = Jenkins.instance
+WorkflowJob job = jenkins.getItemByFullName(jobName, WorkflowJob)
+CpsFlowDefinition definition = new CpsFlowDefinition(jenkinsfile.text, false)
 
 if (job == null) {
   job = jenkins.createProject(WorkflowJob, jobName)
@@ -32,7 +32,7 @@ if (job == null) {
   // scheduleBuild() without a cause attaches Cause.LegacyCodeCause ("Legacy code started this job")
   job.scheduleBuild(new Cause.RemoteCause('init.groovy.d', 'create-demo-pipeline.groovy'))
 } else {
-  def currentScript = (job.definition instanceof CpsFlowDefinition) ? job.definition.script : null
+  String currentScript = (job.definition instanceof CpsFlowDefinition) ? job.definition.script : null
   if (currentScript != jenkinsfile.text) {
     job.definition = definition
     job.save()
