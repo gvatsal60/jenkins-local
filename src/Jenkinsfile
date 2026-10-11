@@ -1,12 +1,12 @@
 pipeline {
-  agent { label "docker-agent" }
+  agent { label 'docker-agent' }
   stages {
-    stage("Build") {
+    stage('Build') {
       steps {
         sh "echo 'Compiling the application...'"
       }
     }
-    stage("Test") {
+    stage('Test') {
       steps {
         sh '''
           echo "Running unit tests..."

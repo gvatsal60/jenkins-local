@@ -5,7 +5,7 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
-def jobName = "demo-pipeline"
+def jobName = 'demo-pipeline'
 def jenkinsfile = new File("/var/jenkins_home/seed/Jenkinsfile")
 
 if (!jenkinsfile.exists()) {
