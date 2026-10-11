@@ -33,11 +33,11 @@ if (job == null) {
   job.scheduleBuild(new Cause.RemoteCause('init.groovy.d', 'create-demo-pipeline.groovy'))
 } else {
   String currentScript = (job.definition instanceof CpsFlowDefinition) ? job.definition.script : null
-  if (currentScript != jenkinsfile.text) {
+  if (currentScript == jenkinsfile.text) {
+    logger.info('[seed] Pipeline job is up to date: ' + jobName)
+  } else {
     job.definition = definition
     job.save()
     logger.info('[seed] Updated pipeline definition: ' + jobName)
-  } else {
-    logger.info('[seed] Pipeline job is up to date: ' + jobName)
   }
 }
