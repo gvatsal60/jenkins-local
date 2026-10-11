@@ -5,17 +5,20 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
+import java.util.logging.Logger
+
+def logger = Logger.getLogger('init.groovy.d.create-demo-pipeline')
 def jobName = 'demo-pipeline'
 def jenkinsfile = new File('/var/jenkins_home/seed/Jenkinsfile')
 
 if (!jenkinsfile.exists()) {
-  println "[seed] ${jenkinsfile} not found, skipping job creation"
+  logger.info('[seed] ' + jenkinsfile + ' not found, skipping job creation')
   return
 }
 
 // Unsandboxed pipeline scripts must be approved in Script Approval before they can run
 ScriptApproval.get().preapprove(jenkinsfile.text, GroovyLanguage.get())
-println '[seed] Approved pipeline script: ' + jenkinsfile
+logger.info('[seed] Approved pipeline script: ' + jenkinsfile)
 
 def jenkins = Jenkins.instance
 def job = jenkins.getItemByFullName(jobName, WorkflowJob)
@@ -25,7 +28,7 @@ if (job == null) {
   job = jenkins.createProject(WorkflowJob, jobName)
   job.definition = definition
   job.save()
-  println '[seed] Created pipeline job: ' + jobName
+  logger.info('[seed] Created pipeline job: ' + jobName)
   // scheduleBuild() without a cause attaches Cause.LegacyCodeCause ("Legacy code started this job")
   job.scheduleBuild(new Cause.RemoteCause('init.groovy.d', 'create-demo-pipeline.groovy'))
 } else {
@@ -33,8 +36,8 @@ if (job == null) {
   if (currentScript != jenkinsfile.text) {
     job.definition = definition
     job.save()
-    println '[seed] Updated pipeline definition: ' + jobName
+    logger.info('[seed] Updated pipeline definition: ' + jobName)
   } else {
-    println '[seed] Pipeline job is up to date: ' + jobName
+    logger.info('[seed] Pipeline job is up to date: ' + jobName)
   }
 }
