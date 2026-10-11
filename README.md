@@ -36,6 +36,8 @@ Initial admin password:
 make jenkins-pass
 ```
 
+A demo pipeline job (`demo-pipeline`) is created automatically on startup from `src/Jenkinsfile` and runs a failing test to demonstrate the Explain Error plugin with Ollama.
+
 ### Ollama
 
 Access Ollama at `http://localhost:11434`
