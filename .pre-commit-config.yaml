@@ -44,8 +44,6 @@ repos:
     rev: "v11.1.1"
     hooks:
       - id: npm-groovy-lint
-        language: docker_image
-        entry: nvuillam/npm-groovy-lint:v18.0.0
         args: ['--fix']
         types: [groovy]
   # Ruff for linting and formatting Python files
