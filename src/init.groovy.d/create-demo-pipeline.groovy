@@ -47,5 +47,7 @@ import java.util.logging.Logger
             job.definition = definition
             job.save()
             logger.info('[seed] Updated pipeline definition: ' + jobName)
+            // scheduleBuild() without a cause attaches Cause.LegacyCodeCause ("Legacy code started this job")
+            job.scheduleBuild(new Cause.RemoteCause('init.groovy.d', 'create-demo-pipeline.groovy'))
         }
     }
