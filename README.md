@@ -19,8 +19,6 @@ cd jenkins-local
 make up
 ```
 
-> Note: A demo pipeline job (`demo-pipeline`) is created automatically on startup from `src/Jenkinsfile`. It runs a failing test that produces a realistic stack trace, triggering the Explain Error plugin to generate an AI-powered error analysis using the local Ollama `qwen2.5:0.5b` model.
-
 ## 📋 Services
 
 | Service   | Port    | Description                  |

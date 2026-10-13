@@ -49,18 +49,13 @@ unclassified:
   explainError:
     enableExplanation: true
     enableAutoExplainOnFailure: true
-    # qwen2.5:0.5b otherwise returns resolutionSteps as objects, which fails
-    # JenkinsLogAnalysis parsing - spell out the exact JSON schema instead
-    customContext: |
-      Respond with a single JSON object with exactly these fields:
-      errorSummary: string
-      resolutionSteps: array of strings
-      bestPractices: array of strings
-      errorSignature: string
-      resolutionSteps and bestPractices MUST be arrays of plain strings, never objects.
     aiProvider:
       ollama:
         model: "qwen2.5:0.5b"
         url: "http://ollama-local:11434"
         # language: "en"
+        # customContext: |
+        #   Consider these additional instructions:
+        #   - If the error is from SonarQube Scanner, link to: https://example.org/sonarqube-kb
+        #   - If a Kubernetes manifest failed, remind about cluster-specific requirements
         # logPattern: "(?i)(error|exception|failed|fatal)"
