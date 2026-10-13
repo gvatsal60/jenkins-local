@@ -41,7 +41,7 @@ repos:
       - id: trailing-whitespace
   # Groovy linting and formatting
   - repo: https://github.com/nvuillam/npm-groovy-lint
-    rev: "v16.2.0"
+    rev: "v14.6.0"
     hooks:
       - id: npm-groovy-lint
         args: ['--fix']
