@@ -194,4 +194,4 @@ repos:
   - repo: https://github.com/jenkinsci/jenkinsfilelint
     rev: "v1.5.1"
     hooks:
-      - id: jenkinsfile-lint
+      - id: jenkinsfilelint
