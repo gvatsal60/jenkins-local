@@ -50,6 +50,7 @@ services:
       - docker-proxy-net
     environment:
       - CONTAINERS=1
+      - POST=1
       - IMAGES=1
       - VOLUMES=1
       - NETWORKS=1
@@ -58,7 +59,7 @@ services:
       - VERSION=1
       - PING=1
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:2375/version')\""]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:2375/version || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 5
