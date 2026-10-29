@@ -36,26 +36,10 @@ jenkins:
                 user: "jenkins"
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
-              network: "jenkins-ai-mesh_jenkins-net"
+              network: "jenkins-local-mesh_jenkins-net"
               mounts:
                 - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
               environmentsString: |
                 JENKINS_URL=http://jenkins-controller:8080
-unclassified:
-  location:
-    url: "http://localhost:8080/" # Primary Jenkins URL
-  resourceRoot:
-    url: "http://jenkins-static.local" # Resource Root URL
-  explainError:
-    enableExplanation: true
-    enableAutoExplainOnFailure: true
-    aiProvider:
-      ollama:
-        model: "qwen2.5:0.5b"
-        url: "http://ollama-local:11434"
-        # language: "en"
-        # customContext: |
-        #   Consider these additional instructions:
-        #   - If the error is from SonarQube Scanner, link to: https://example.org/sonarqube-kb
-        #   - If a Kubernetes manifest failed, remind about cluster-specific requirements
-        # logPattern: "(?i)(error|exception|failed|fatal)"
+jobs:
+  - script: "pipelineJob('test') { definition { cps { sandbox(true); script(new File('/var/jenkins_home/Jenkinsfile').text) } } }"
