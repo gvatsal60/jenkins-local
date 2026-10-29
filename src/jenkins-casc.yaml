@@ -41,10 +41,10 @@ jenkins:
                 - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
               environmentsString: |
                 JENKINS_URL=http://jenkins-controller:8080
-
 jobs:
   - script: >
       pipelineJob('test') {
+
         definition {
           cps {
             sandbox(true)
@@ -52,3 +52,4 @@ jobs:
           }
         }
       }
+
