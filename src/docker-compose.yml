@@ -1,4 +1,4 @@
-name: jenkins-ai-mesh
+name: jenkins-local-mesh
 services:
   # 1. INIT SERVICE: Installs plugins cleanly into the volume first, then turns off
   jenkins-plugin-installer:
@@ -25,9 +25,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./jenkins-casc.yaml:/var/jenkins_home/casc.yaml:ro
       - ./init.groovy.d:/var/jenkins_home/init.groovy.d:ro
+      - ./Jenkinsfile:/var/jenkins_home/Jenkinsfile:ro
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true -Djenkins.url=http://localhost:8080/ -DJENKINS_URL=http://localhost:8080/
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true
       - JENKINS_SLAVE_AGENT_PORT=50000
       - JENKINS_URL=http://localhost:8080/
     networks:
@@ -42,21 +43,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-  # 3. OLLAMA SERVICE
-  ollama-local:
-    image: ollama/ollama:latest
-    container_name: ollama-local
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    entrypoint: ["/bin/sh", "-c", "ollama serve & echo 'Waiting for Ollama to boot...' && until ollama list > /dev/null 2>&1; do sleep 1; done && echo 'Checking/Pulling model...' && ollama pull qwen2.5:0.5b && wait"]
-    networks:
-      - jenkins-net
+
 volumes:
   jenkins_data:
-  ollama_data:
 networks:
   jenkins-net:
     driver: bridge

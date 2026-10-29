@@ -3,7 +3,7 @@ SRC_DIR := $(TOP_DIR)/src
 DOCKER_COMPOSE_FILE := $(SRC_DIR)/docker-compose.yml
 COMPOSE_CMD := docker compose -f $(DOCKER_COMPOSE_FILE)
 
-.PHONY: all reset clean down help jenkins-pass jenkins-shell logs ollama-list ollama-pull ollama-shell ps restart test up
+.PHONY: all reset clean down help jenkins-pass jenkins-shell logs ps restart test up
 
 all: clean up
 
@@ -39,12 +39,3 @@ jenkins-pass: up ## Show Jenkins Initial Admin Password
 
 jenkins-shell: up ## Open Shell in Jenkins Container
 	@$(COMPOSE_CMD) exec jenkins /bin/bash
-
-ollama-list: up ## List Ollama Models
-	@$(COMPOSE_CMD) exec ollama ollama list
-
-ollama-pull: up ## Pull Ollama Model (usage: make ollama-pull MODEL=<name>)
-	@$(COMPOSE_CMD) exec ollama ollama pull $(MODEL)
-
-ollama-shell: up ## Open Shell in Ollama Container
-	@$(COMPOSE_CMD) exec ollama /bin/sh
