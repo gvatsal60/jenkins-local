@@ -36,7 +36,7 @@ jenkins:
                 user: "jenkins"
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
-               network: "jenkins-local-mesh_jenkins-net"
+              network: "jenkins-local-mesh_jenkins-net"
               environmentsString: |
                 JENKINS_URL=http://jenkins-controller:8080
 jobs:
