@@ -45,6 +45,7 @@ jobs:
   - script: >
       pipelineJob('test') {
 
+
         definition {
           cps {
             sandbox(true)
