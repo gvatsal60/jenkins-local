@@ -14,7 +14,6 @@ jenkins:
   authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousJobStatusPermission: false
-
   # Dynamically provision agents via Docker Cloud
   clouds:
     - docker:
@@ -40,6 +39,5 @@ jenkins:
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
               network: "jenkins-net"
-
 jobs:
   - script: "pipelineJob('test') { definition { cps { sandbox(true); script(new File('/var/jenkins_home/Jenkinsfile').text) } } }"

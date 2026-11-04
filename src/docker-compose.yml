@@ -1,5 +1,4 @@
 name: jenkins-local-mesh
-
 services:
   # The Gatekeeper: Uses the industry-standard, trusted Tecnativa proxy
   docker-proxy:
@@ -15,16 +14,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       # Explicitly turn off ALL default capabilities, granting only the bare minimum for Jenkins
-      - CONTAINERS=1   # Allow creating, listing, and starting agent containers
-      - NETWORKS=1     # Allow dynamic provisioning of network attachments
-      - IMAGES=1       # Allow pulling agent images (e.g., jenkins/agent)
-      - POST=1         # Allow execution commands sent to the containers
+      - CONTAINERS=1 # Allow creating, listing, and starting agent containers
+      - NETWORKS=1 # Allow dynamic provisioning of network attachments
+      - IMAGES=1 # Allow pulling agent images (e.g., jenkins/agent)
+      - POST=1 # Allow execution commands sent to the containers
       # The following remain safely locked at 0 (blocked) by default:
       # SWARM=0, ENGINE=0, CONFIGS=0, SECRETS=0, VOLUMES=0
     networks:
       - jenkins-net
     restart: unless-stopped
-
   jenkins-controller:
     image: jenkins/jenkins:lts
     container_name: jenkins-controller
@@ -46,10 +44,8 @@ services:
       JENKINS_SLAVE_AGENT_PORT: 50000
       JENKINS_URL: http://localhost:8080/
       JAVA_OPTS: >
-        -Djenkins.install.runSetupWizard=false
-        -Dhudson.model.UsageStatistics.disabled=true
-        -Dhudson.security.csrf.GlobalCrumbIssuerStrategy=true
-        -Djenkins.security.SystemReadPermission=true
+        -Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true -Dhudson.security.csrf.GlobalCrumbIssuerStrategy=true -Djenkins.security.SystemReadPermission=true
+
     networks:
       - jenkins-net
     restart: unless-stopped
@@ -58,15 +54,13 @@ services:
     depends_on:
       - docker-proxy
     healthcheck:
-      test: [ "CMD-SHELL", "cat </dev/tcp/127.0.0.1/8080 || exit 1" ]
+      test: ["CMD-SHELL", "cat </dev/tcp/127.0.0.1/8080 || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
       start_period: 60s
-
 volumes:
   jenkins_data:
-
 networks:
   jenkins-net:
     driver: bridge
