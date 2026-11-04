@@ -1,50 +1,72 @@
 name: jenkins-local-mesh
-services:
-  # 1. INIT SERVICE: Installs plugins cleanly into the volume first, then turns off
-  jenkins-plugin-installer:
-    image: jenkins/jenkins:lts
-    container_name: jenkins-installer
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt:ro
-    networks:
-      - jenkins-net
-    command: >
-      bash -c "jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --plugin-download-directory /var/jenkins_home/plugins"
 
-    # 2. CONTROLLER SERVICE: Runs the stable server once plugins exist
-  jenkins-controller:
-    image: jenkins/jenkins:lts
-    container_name: jenkins-controller
-    user: root
-    ports:
-      - "8080:8080" # Jenkins Port
-      - "50000:50000" # JNLP Port
+services:
+  # The Gatekeeper: Uses the industry-standard, trusted Tecnativa proxy
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    container_name: docker-socket-proxy
+    # The proxy requires privileged mapping flags on certain SELinux/AppArmor setups
+    # to communicate with the system socket, but its internal network API is highly restricted.
+    privileged: true
+    security_opt:
+      - no-new-privileges:true
+    read_only: true # Hardens the container filesystem against modifications
     volumes:
-      - jenkins_data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./jenkins-casc.yaml:/var/jenkins_home/casc.yaml:ro
-      - ./init.groovy.d:/var/jenkins_home/init.groovy.d:ro
-      - ./Jenkinsfile:/var/jenkins_home/Jenkinsfile:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true
-      - JENKINS_SLAVE_AGENT_PORT=50000
-      - JENKINS_URL=http://localhost:8080/
+      # Explicitly turn off ALL default capabilities, granting only the bare minimum for Jenkins
+      - CONTAINERS=1   # Allow creating, listing, and starting agent containers
+      - NETWORKS=1     # Allow dynamic provisioning of network attachments
+      - IMAGES=1       # Allow pulling agent images (e.g., jenkins/agent)
+      - POST=1         # Allow execution commands sent to the containers
+      # The following remain safely locked at 0 (blocked) by default:
+      # SWARM=0, ENGINE=0, CONFIGS=0, SECRETS=0, VOLUMES=0
     networks:
       - jenkins-net
     restart: unless-stopped
+
+  jenkins-controller:
+    image: jenkins/jenkins:lts
+    container_name: jenkins-controller
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - ./jenkins-casc.yaml:/var/jenkins_home/casc.yaml:ro
+      - ./init.groovy.d:/var/jenkins_home/init.groovy.d:ro
+      - ./plugins.txt:/usr/share/jenkins/ref/plugins.txt:ro
+    environment:
+      CASC_JENKINS_CONFIG: /var/jenkins_home/casc.yaml
+      JENKINS_SLAVE_AGENT_PORT: 50000
+      JENKINS_URL: http://localhost:8080/
+      JAVA_OPTS: >
+        -Djenkins.install.runSetupWizard=false
+        -Dhudson.model.UsageStatistics.disabled=true
+        -Dhudson.security.csrf.GlobalCrumbIssuerStrategy=true
+        -Djenkins.security.SystemReadPermission=true
+    networks:
+      - jenkins-net
+    restart: unless-stopped
+    tmpfs:
+      - /tmp:size=2G
     depends_on:
-      jenkins-plugin-installer:
-        condition: service_completed_successfully
+      - docker-proxy
     healthcheck:
-      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1"]
-      interval: 10s
+      test: [ "CMD-SHELL", "cat </dev/tcp/127.0.0.1/8080 || exit 1" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 3
+      start_period: 60s
+
 volumes:
   jenkins_data:
+
 networks:
   jenkins-net:
     driver: bridge

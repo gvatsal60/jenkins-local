@@ -3,4 +3,5 @@ credentials-binding
 docker-plugin
 instance-identity
 job-dsl
+matrix-auth
 workflow-aggregator

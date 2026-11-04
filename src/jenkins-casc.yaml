@@ -1,6 +1,8 @@
 jenkins:
   # Disable controller executors so everything runs on agents
   numExecutors: 0
+  agentProtocols:
+    - "JNLP4-connect"
   # Enable TCP agent listener on port 50000
   slaveAgentPort: 50000
   securityRealm:
@@ -11,18 +13,19 @@ jenkins:
           password: "${JENKINS_ADMIN_PASSWORD:-admin}"
   authorizationStrategy:
     loggedInUsersCanDoAnything:
-      allowAnonymousRead: false
+      allowAnonymousJobStatusPermission: false
+
   # Dynamically provision agents via Docker Cloud
   clouds:
     - docker:
         name: "docker"
-        dockerApi:
-          dockerHost:
-            uri: "unix:///var/run/docker.sock"
+        dockerHost:
+          # Routes requests through secure proxy container instead of a missing local socket
+          uri: "tcp://docker-proxy:2375"
         containerCap: 3
         templates:
           - name: "inbound-agent"
-            labelString: "docker-agent"
+            label: "docker-agent"
             mode: NORMAL
             remoteFs: "/home/jenkins/agent"
             instanceCapStr: "3"
@@ -32,14 +35,11 @@ jenkins:
               idleMinutes: 10
             connector:
               jnlp:
-                jenkinsUrl: "http://jenkins-controller:8080"
+                # Uses standard internal container networking variable name
                 user: "jenkins"
             dockerTemplateBase:
               image: "jenkins/inbound-agent:latest"
-              network: "jenkins-local-mesh_jenkins-net"
-              mounts:
-                - "type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock"
-              environmentsString: |
-                JENKINS_URL=http://jenkins-controller:8080
+              network: "jenkins-net"
+
 jobs:
   - script: "pipelineJob('test') { definition { cps { sandbox(true); script(new File('/var/jenkins_home/Jenkinsfile').text) } } }"

@@ -14,8 +14,8 @@ repos:
       - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
-      - id: check-docstring-first
       - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
       - id: check-json
         exclude: '\.ipynb$' # Exclude Jupyter notebooks
       - id: check-merge-conflict
@@ -38,6 +38,7 @@ repos:
         args: [--autofix]
         exclude: '\.ipynb$' # Exclude Jupyter notebooks
       - id: requirements-txt-fixer
+      - id: sort-simple-yaml
       - id: trailing-whitespace
   # Ruff for linting and formatting Python files
   - repo: https://github.com/astral-sh/ruff-pre-commit
